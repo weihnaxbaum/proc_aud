@@ -1,13 +1,19 @@
 use std::time::Duration;
 
+#[cfg(feature = "wav")]
+use hound::{SampleFormat, WavSpec, WavWriter};
+
 #[derive(Clone, Default)]
 pub struct Track<'a> {
     pub notes: Vec<Note<'a>>,
 }
 
 impl<'a> Track<'a> {
-    pub fn render(&self, sample_rate: f32) -> Vec<RenderedSample> {
-        let mut result = vec![];
+    pub fn render(&self, sample_rate: f32) -> RenderOutput {
+        let mut output = RenderOutput {
+            samples: vec![],
+            stereo: false,
+        };
         for note in &self.notes {
             let start_sample = (note.start.as_secs_f32() * sample_rate) as usize;
             let end_sample = ((note.start + note.duration).as_secs_f32() * sample_rate) as usize;
@@ -36,21 +42,57 @@ impl<'a> Track<'a> {
 
                 let val = note.instrument.sample(sample_data);
                 let pan = (note.pan)(note_progress).clamp(0., 1.);
+                if pan != 0.5 {
+                    output.stereo = true;
+                }
                 let mut rendered_sample = RenderedSample::from_pan(val, pan);
 
                 rendered_sample.left *= amplitude;
                 rendered_sample.right *= amplitude;
 
-                if result.len() <= current_sample {
-                    result.resize_with(current_sample + 1, RenderedSample::default);
+                if output.samples.len() <= current_sample {
+                    output
+                        .samples
+                        .resize_with(current_sample + 1, RenderedSample::default);
                 }
 
-                result[current_sample].left += rendered_sample.left;
-                result[current_sample].right += rendered_sample.right;
+                output.samples[current_sample].left += rendered_sample.left;
+                output.samples[current_sample].right += rendered_sample.right;
             }
         }
-        result
+        output
     }
+    #[cfg(feature = "wav")]
+    pub fn save_wav(
+        &self,
+        path: &str,
+        sample_rate: f32,
+        bits_per_sample: u16,
+    ) -> hound::Result<()> {
+        let rendered = self.render(sample_rate);
+        let channels = if rendered.stereo { 2 } else { 1 };
+        let spec = WavSpec {
+            channels,
+            sample_rate: sample_rate as u32,
+            bits_per_sample,
+            sample_format: SampleFormat::Float,
+        };
+        let mut writer = WavWriter::create(path, spec)?;
+        for sample in rendered.samples {
+            writer.write_sample(sample.left)?;
+            if rendered.stereo {
+                writer.write_sample(sample.right)?;
+            }
+        }
+        writer.finalize()?;
+        Ok(())
+    }
+}
+
+#[derive(Clone)]
+pub struct RenderOutput {
+    pub samples: Vec<RenderedSample>,
+    pub stereo: bool,
 }
 
 #[derive(Clone)]
@@ -134,7 +176,7 @@ mod tests {
             amplitude: &|_| 0.5,
             pan: &|_| 0.5,
         });
-        let rendered = track.render(2.);
+        let rendered = track.render(2.).samples;
         assert_approx_eq(rendered[0], RenderedSample::ZERO);
         assert_approx_eq(rendered[1], RenderedSample::ZERO);
         assert_approx_eq(rendered[2], RenderedSample::center(0.25));
@@ -161,7 +203,7 @@ mod tests {
             amplitude: &|_| 1.,
             pan: &|_| 0.5,
         });
-        let rendered = track.render(4.);
+        let rendered = track.render(4.).samples;
         assert_approx_eq(rendered[0], RenderedSample::center(0. + 0.));
         assert_approx_eq(rendered[1], RenderedSample::center(0.25 + 0.46193975));
         assert_approx_eq(rendered[2], RenderedSample::center(0. + -0.35355338));
@@ -179,7 +221,7 @@ mod tests {
             amplitude: &|_| 1.,
             pan: &|_| 0.25,
         });
-        let rendered = track.render(4.);
+        let rendered = track.render(4.).samples;
         assert_approx_eq(rendered[0], RenderedSample::ZERO);
         assert_approx_eq(rendered[1], RenderedSample::new(0.75, 0.25));
         assert_approx_eq(rendered[2], RenderedSample::new(0., 0.));
@@ -197,7 +239,7 @@ mod tests {
             amplitude: &|_| 1.,
             pan: &|_| 0.5,
         });
-        let rendered = track.render(5.);
+        let rendered = track.render(5.).samples;
         assert_approx_eq(rendered[0], RenderedSample::ZERO);
         assert_approx_eq(rendered[1], RenderedSample::center(0.124344945));
         assert_approx_eq(rendered[2], RenderedSample::center(0.42216396));

@@ -4,3 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+hound = { version = "3", optional = true }
+
+[features]
+wav = ["dep:hound"]
+
+[[example]]
+name = "simple"
+required-features = ["wav"]
