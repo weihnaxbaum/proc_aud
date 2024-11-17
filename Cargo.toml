@@ -12,3 +12,7 @@ wav = ["dep:hound"]
 [[example]]
 name = "simple"
 required-features = ["wav"]
+
+[[example]]
+name = "instruments"
+required-features = ["wav"]

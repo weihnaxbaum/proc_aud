@@ -1,0 +1,33 @@
+use std::time::Duration;
+
+use proc_aud::prelude::*;
+
+fn main() {
+    let mut track = Track::default();
+    let instruments: [&dyn Instrument; 6] = [
+        &Sine,
+        &Square,
+        &Triangle,
+        &Sawtooth,
+        &CombinedInstruments {
+            instruments: vec![&Sine, &Square, &Triangle, &Sawtooth],
+        },
+        &TimbreInstrument {
+            timbre: vec![(0.5, 0.3), (1., 1.), (2., 0.5)],
+            instrument: &Sine,
+        },
+    ];
+    for (i, instrument) in instruments.into_iter().enumerate() {
+        track.notes.push(Note {
+            start: Duration::from_secs(i as u64 * 3),
+            duration: Duration::from_secs(2),
+            instrument,
+            hz: &|_| 220.,
+            amplitude: &|x| 1.5 - x,
+            pan: &|_| 0.5,
+        });
+    }
+    track
+        .save_wav("instruments.wav", 44100., 32)
+        .expect("Could not write file");
+}

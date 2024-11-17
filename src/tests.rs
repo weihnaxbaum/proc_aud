@@ -1,14 +1,6 @@
-use std::{f32::consts::TAU, time::Duration};
+use std::time::Duration;
 
 use crate::prelude::*;
-
-struct SineWave;
-
-impl Instrument for SineWave {
-    fn sample(&self, data: SampleData) -> f32 {
-        (TAU * data.note_time_elapsed().as_secs_f32() * data.hz()).sin()
-    }
-}
 
 #[test]
 fn simple() {
@@ -16,7 +8,7 @@ fn simple() {
     track.notes.push(Note {
         start: Duration::from_secs_f32(0.5),
         duration: Duration::from_secs_f32(2.5),
-        instrument: &SineWave,
+        instrument: &Sine,
         hz: &|_| 0.5,
         amplitude: &|_| 0.5,
         pan: &|_| 0.5,
@@ -35,7 +27,7 @@ fn multiple() {
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &SineWave,
+        instrument: &Sine,
         hz: &|_| 1.,
         amplitude: &|_| 0.5,
         pan: &|_| 0.5,
@@ -43,7 +35,7 @@ fn multiple() {
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &SineWave,
+        instrument: &Sine,
         hz: &|_| 1.25,
         amplitude: &|_| 1.,
         pan: &|_| 0.5,
@@ -61,7 +53,7 @@ fn pan() {
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &SineWave,
+        instrument: &Sine,
         hz: &|_| 1.,
         amplitude: &|_| 1.,
         pan: &|_| 0.25,
@@ -79,7 +71,7 @@ fn pitch_shift() {
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &SineWave,
+        instrument: &Sine,
         hz: &|x| x,
         amplitude: &|_| 1.,
         pan: &|_| 0.5,

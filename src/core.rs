@@ -111,17 +111,8 @@ pub trait Instrument {
 
 #[derive(Clone, Copy, Debug)]
 pub struct SampleData {
-    note_time_elapsed: Duration,
-    hz: f32,
-}
-
-impl SampleData {
-    pub fn note_time_elapsed(&self) -> Duration {
-        self.note_time_elapsed
-    }
-    pub fn hz(&self) -> f32 {
-        self.hz
-    }
+    pub note_time_elapsed: Duration,
+    pub hz: f32,
 }
 
 pub type Func<'a> = &'a dyn Fn(f32) -> f32;

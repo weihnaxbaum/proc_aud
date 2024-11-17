@@ -1,19 +1,11 @@
-use std::{f32::consts::TAU, time::Duration};
+use std::time::Duration;
 
 use proc_aud::prelude::*;
-
-struct SineWave;
-
-impl Instrument for SineWave {
-    fn sample(&self, data: SampleData) -> f32 {
-        (TAU * data.note_time_elapsed().as_secs_f32() * data.hz()).sin()
-    }
-}
 
 fn main() {
     let mut track = Track::default();
     let duration = Duration::from_secs(1);
-    let instrument = &SineWave;
+    let instrument = &Sine;
     track.notes.push(Note {
         start: Duration::ZERO,
         duration,
