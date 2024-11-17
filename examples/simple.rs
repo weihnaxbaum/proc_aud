@@ -1,6 +1,6 @@
 use std::{f32::consts::TAU, time::Duration};
 
-use proc_aud::*;
+use proc_aud::prelude::*;
 
 struct SineWave;
 
