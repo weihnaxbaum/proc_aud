@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{rc::Rc, time::Duration};
 
 #[cfg(feature = "wav")]
 use hound::{SampleFormat, WavSpec, WavWriter};
@@ -100,9 +100,9 @@ pub struct Note<'a> {
     pub start: Duration,
     pub duration: Duration,
     pub instrument: &'a dyn Instrument,
-    pub hz: Func<'a>,
-    pub amplitude: Func<'a>,
-    pub pan: Func<'a>,
+    pub hz: Func,
+    pub amplitude: Func,
+    pub pan: Func,
 }
 
 pub trait Instrument {
@@ -115,7 +115,7 @@ pub struct SampleData {
     pub hz: f32,
 }
 
-pub type Func<'a> = &'a dyn Fn(f32) -> f32;
+pub type Func = Rc<dyn Fn(f32) -> f32>;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct RenderedSample {

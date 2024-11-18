@@ -6,7 +6,7 @@ mod tests;
 
 pub mod prelude {
     pub use crate::{
-        core::{Instrument, Note, RenderOutput, RenderedSample, SampleData, Track},
+        core::{Func, Instrument, Note, RenderOutput, RenderedSample, SampleData, Track},
         instruments::{
             CombinedInstruments, FrequencyAdjustedInstrument, Sawtooth, Sine, Square,
             TimbreInstrument, Triangle,

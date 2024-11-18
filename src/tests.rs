@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{rc::Rc, time::Duration};
 
 use crate::prelude::*;
 
@@ -9,9 +9,9 @@ fn simple() {
         start: Duration::from_secs_f32(0.5),
         duration: Duration::from_secs_f32(2.5),
         instrument: &Sine,
-        hz: &|_| 0.5,
-        amplitude: &|_| 0.5,
-        pan: &|_| 0.5,
+        hz: Rc::new(|_| 0.5),
+        amplitude: Rc::new(|_| 0.5),
+        pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(2.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
@@ -28,17 +28,17 @@ fn multiple() {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
-        hz: &|_| 1.,
-        amplitude: &|_| 0.5,
-        pan: &|_| 0.5,
+        hz: Rc::new(|_| 1.),
+        amplitude: Rc::new(|_| 0.5),
+        pan: Rc::new(|_| 0.5),
     });
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
-        hz: &|_| 1.25,
-        amplitude: &|_| 1.,
-        pan: &|_| 0.5,
+        hz: Rc::new(|_| 1.25),
+        amplitude: Rc::new(|_| 1.),
+        pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::center(0. + 0.));
@@ -54,9 +54,9 @@ fn pan() {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
-        hz: &|_| 1.,
-        amplitude: &|_| 1.,
-        pan: &|_| 0.25,
+        hz: Rc::new(|_| 1.),
+        amplitude: Rc::new(|_| 1.),
+        pan: Rc::new(|_| 0.25),
     });
     let rendered = track.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
@@ -72,9 +72,9 @@ fn pitch_shift() {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
-        hz: &|x| x,
-        amplitude: &|_| 1.,
-        pan: &|_| 0.5,
+        hz: Rc::new(|x| x),
+        amplitude: Rc::new(|_| 1.),
+        pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(5.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);

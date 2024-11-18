@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{rc::Rc, time::Duration};
 
 use proc_aud::prelude::*;
 
@@ -17,14 +17,17 @@ fn main() {
             instrument: &Sine,
         },
     ];
+    let hz: Func = Rc::new(|_| 220.);
+    let amplitude: Func = Rc::new(|x| 1.5 - x);
+    let pan: Func = Rc::new(|_| 0.5);
     for (i, instrument) in instruments.into_iter().enumerate() {
         track.notes.push(Note {
             start: Duration::from_secs(i as u64 * 3),
             duration: Duration::from_secs(2),
             instrument,
-            hz: &|_| 220.,
-            amplitude: &|x| 1.5 - x,
-            pan: &|_| 0.5,
+            hz: Rc::clone(&hz),
+            amplitude: Rc::clone(&amplitude),
+            pan: Rc::clone(&pan),
         });
     }
     track
