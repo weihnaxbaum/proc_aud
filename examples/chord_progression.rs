@@ -52,6 +52,7 @@ fn main() {
         }
     }
     track
-        .save_wav("chord_progression.wav", 44100., 32)
+        .render(44100.)
+        .save_wav("chord_progression.wav", 32)
         .expect("Could not write file");
 }

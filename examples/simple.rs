@@ -24,6 +24,7 @@ fn main() {
         pan: Rc::clone(&pan),
     });
     track
-        .save_wav("simple.wav", 44100., 32)
+        .render(44100.)
+        .save_wav("simple.wav", 32)
         .expect("Could not write file");
 }

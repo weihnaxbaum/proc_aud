@@ -13,6 +13,7 @@ impl<'a> Track<'a> {
         let mut output = RenderOutput {
             samples: vec![],
             stereo: false,
+            sample_rate,
         };
         for note in &self.notes {
             let start_sample = (note.start.as_secs_f32() * sample_rate) as usize;
@@ -62,37 +63,35 @@ impl<'a> Track<'a> {
         }
         output
     }
-    #[cfg(feature = "wav")]
-    pub fn save_wav(
-        &self,
-        path: &str,
-        sample_rate: f32,
-        bits_per_sample: u16,
-    ) -> hound::Result<()> {
-        let rendered = self.render(sample_rate);
-        let channels = if rendered.stereo { 2 } else { 1 };
-        let spec = WavSpec {
-            channels,
-            sample_rate: sample_rate as u32,
-            bits_per_sample,
-            sample_format: SampleFormat::Float,
-        };
-        let mut writer = WavWriter::create(path, spec)?;
-        for sample in rendered.samples {
-            writer.write_sample(sample.left)?;
-            if rendered.stereo {
-                writer.write_sample(sample.right)?;
-            }
-        }
-        writer.finalize()?;
-        Ok(())
-    }
 }
 
 #[derive(Clone)]
 pub struct RenderOutput {
     pub samples: Vec<RenderedSample>,
     pub stereo: bool,
+    pub sample_rate: f32,
+}
+
+impl RenderOutput {
+    #[cfg(feature = "wav")]
+    pub fn save_wav(&self, path: &str, bits_per_sample: u16) -> hound::Result<()> {
+        let channels = if self.stereo { 2 } else { 1 };
+        let spec = WavSpec {
+            channels,
+            sample_rate: self.sample_rate as u32,
+            bits_per_sample,
+            sample_format: SampleFormat::Float,
+        };
+        let mut writer = WavWriter::create(path, spec)?;
+        for sample in &self.samples {
+            writer.write_sample(sample.left)?;
+            if self.stereo {
+                writer.write_sample(sample.right)?;
+            }
+        }
+        writer.finalize()?;
+        Ok(())
+    }
 }
 
 #[derive(Clone)]
