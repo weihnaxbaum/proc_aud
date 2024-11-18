@@ -12,7 +12,7 @@ fn main() {
         duration,
         instrument,
         hz: Rc::new(|x| 220. * x + 220.),
-        amplitude: Rc::new(|_| 1.),
+        amp: Rc::new(|_| 1.),
         pan: Rc::clone(&pan),
     });
     track.notes.push(Note {
@@ -20,7 +20,7 @@ fn main() {
         duration,
         instrument,
         hz: Rc::new(|x| -440. * x + 440.),
-        amplitude: Rc::new(|x| 1. - x),
+        amp: Rc::new(|x| 1. - x),
         pan: Rc::clone(&pan),
     });
     track

@@ -10,7 +10,7 @@ fn simple() {
         duration: Duration::from_secs_f32(2.5),
         instrument: &Sine,
         hz: Rc::new(|_| 0.5),
-        amplitude: Rc::new(|_| 0.5),
+        amp: Rc::new(|_| 0.5),
         pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(2.).samples;
@@ -29,7 +29,7 @@ fn multiple() {
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|_| 1.),
-        amplitude: Rc::new(|_| 0.5),
+        amp: Rc::new(|_| 0.5),
         pan: Rc::new(|_| 0.5),
     });
     track.notes.push(Note {
@@ -37,7 +37,7 @@ fn multiple() {
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|_| 1.25),
-        amplitude: Rc::new(|_| 1.),
+        amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(4.).samples;
@@ -55,7 +55,7 @@ fn pan() {
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|_| 1.),
-        amplitude: Rc::new(|_| 1.),
+        amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.25),
     });
     let rendered = track.render(4.).samples;
@@ -73,7 +73,7 @@ fn pitch_shift() {
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|x| x),
-        amplitude: Rc::new(|_| 1.),
+        amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.5),
     });
     let rendered = track.render(5.).samples;

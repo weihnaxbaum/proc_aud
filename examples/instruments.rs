@@ -18,7 +18,7 @@ fn main() {
         },
     ];
     let hz: Func = Rc::new(|_| 220.);
-    let amplitude: Func = Rc::new(|x| 1.5 - x);
+    let amp: Func = Rc::new(|x| 1.5 - x);
     let pan: Func = Rc::new(|_| 0.5);
     for (i, instrument) in instruments.into_iter().enumerate() {
         track.notes.push(Note {
@@ -26,7 +26,7 @@ fn main() {
             duration: Duration::from_secs(2),
             instrument,
             hz: Rc::clone(&hz),
-            amplitude: Rc::clone(&amplitude),
+            amp: Rc::clone(&amp),
             pan: Rc::clone(&pan),
         });
     }

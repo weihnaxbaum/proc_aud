@@ -23,8 +23,8 @@ impl<'a> Track<'a> {
                 let note_progress =
                     (current_sample - start_sample) as f32 / (end_sample - start_sample) as f32;
 
-                let amplitude = (note.amplitude)(note_progress);
-                if amplitude <= 0. {
+                let amp = (note.amp)(note_progress);
+                if amp <= 0. {
                     continue;
                 }
 
@@ -48,8 +48,8 @@ impl<'a> Track<'a> {
                 }
                 let mut rendered_sample = RenderedSample::from_pan(val, pan);
 
-                rendered_sample.left *= amplitude;
-                rendered_sample.right *= amplitude;
+                rendered_sample.left *= amp;
+                rendered_sample.right *= amp;
 
                 if output.samples.len() <= current_sample {
                     output
@@ -100,7 +100,7 @@ pub struct Note<'a> {
     pub duration: Duration,
     pub instrument: &'a dyn Instrument,
     pub hz: Func,
-    pub amplitude: Func,
+    pub amp: Func,
     pub pan: Func,
 }
 

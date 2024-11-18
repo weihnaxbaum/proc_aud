@@ -29,7 +29,7 @@ fn main() {
         },
     };
     let duration = Duration::from_secs(2);
-    let amplitude: Func = Rc::new(|x| 0.2f32.powf(x));
+    let amp: Func = Rc::new(|x| 0.2f32.powf(x));
     for t in 0..4 {
         let hz_values = match t {
             0 => [C3, E3, G3],
@@ -46,7 +46,7 @@ fn main() {
                 duration,
                 instrument: &instrument,
                 hz: Rc::new(move |_| hz),
-                amplitude: Rc::clone(&amplitude),
+                amp: Rc::clone(&amp),
                 pan: Rc::new(move |x| starting_pan + (0.5 - starting_pan) * x),
             });
         }
