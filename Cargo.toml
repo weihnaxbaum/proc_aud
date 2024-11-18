@@ -16,3 +16,7 @@ required-features = ["wav"]
 [[example]]
 name = "instruments"
 required-features = ["wav"]
+
+[[example]]
+name = "chord_progression"
+required-features = ["wav"]
