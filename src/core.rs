@@ -16,49 +16,24 @@ impl<'a> Track<'a> {
             sample_rate,
         };
         for note in &self.notes {
+            let rendered_note = note.render(sample_rate);
+
+            if rendered_note.stereo {
+                output.stereo = true;
+            }
+
             let start_sample = (note.start.as_secs_f32() * sample_rate) as usize;
             let end_sample = ((note.start + note.duration).as_secs_f32() * sample_rate) as usize;
 
+            if output.samples.len() <= end_sample {
+                output
+                    .samples
+                    .resize_with(end_sample + 1, RenderedSample::default);
+            }
+
             for current_sample in start_sample..end_sample {
-                let note_progress =
-                    (current_sample - start_sample) as f32 / (end_sample - start_sample) as f32;
-
-                let amp = (note.amp)(note_progress);
-                if amp <= 0. {
-                    continue;
-                }
-
-                let hz = (note.hz)(note_progress);
-                if hz <= 0. {
-                    continue;
-                }
-
-                let note_time_elapsed =
-                    Duration::from_secs_f32((current_sample - start_sample) as f32 / sample_rate);
-
-                let sample_data = SampleData {
-                    note_time_elapsed,
-                    hz,
-                };
-
-                let val = note.instrument.sample(sample_data);
-                let pan = (note.pan)(note_progress).clamp(0., 1.);
-                if pan != 0.5 {
-                    output.stereo = true;
-                }
-                let mut rendered_sample = RenderedSample::from_pan(val, pan);
-
-                rendered_sample.left *= amp;
-                rendered_sample.right *= amp;
-
-                if output.samples.len() <= current_sample {
-                    output
-                        .samples
-                        .resize_with(current_sample + 1, RenderedSample::default);
-                }
-
-                output.samples[current_sample].left += rendered_sample.left;
-                output.samples[current_sample].right += rendered_sample.right;
+                output.samples[current_sample].left += rendered_note.samples[current_sample].left;
+                output.samples[current_sample].right += rendered_note.samples[current_sample].right;
             }
         }
         output
@@ -102,6 +77,62 @@ pub struct Note<'a> {
     pub hz: Func,
     pub amp: Func,
     pub pan: Func,
+}
+
+impl<'a> Note<'a> {
+    pub fn render(&self, sample_rate: f32) -> RenderOutput {
+        let start_sample = (self.start.as_secs_f32() * sample_rate) as usize;
+        let end_sample = ((self.start + self.duration).as_secs_f32() * sample_rate) as usize;
+
+        let mut output = RenderOutput {
+            samples: vec![RenderedSample::default(); end_sample],
+            stereo: false,
+            sample_rate,
+        };
+
+        for current_sample in start_sample..end_sample {
+            let note_progress =
+                (current_sample - start_sample) as f32 / (end_sample - start_sample) as f32;
+
+            let amp = (self.amp)(note_progress);
+            if amp <= 0. {
+                continue;
+            }
+
+            let hz = (self.hz)(note_progress);
+            if hz <= 0. {
+                continue;
+            }
+
+            let note_time_elapsed =
+                Duration::from_secs_f32((current_sample - start_sample) as f32 / sample_rate);
+
+            let sample_data = SampleData {
+                note_time_elapsed,
+                hz,
+            };
+
+            let val = self.instrument.sample(sample_data);
+            let pan = (self.pan)(note_progress).clamp(0., 1.);
+            if pan != 0.5 {
+                output.stereo = true;
+            }
+            let mut rendered_sample = RenderedSample::from_pan(val, pan);
+
+            rendered_sample.left *= amp;
+            rendered_sample.right *= amp;
+
+            if output.samples.len() <= current_sample {
+                output
+                    .samples
+                    .resize_with(current_sample + 1, RenderedSample::default);
+            }
+
+            output.samples[current_sample].left += rendered_sample.left;
+            output.samples[current_sample].right += rendered_sample.right;
+        }
+        output
+    }
 }
 
 pub trait Instrument {

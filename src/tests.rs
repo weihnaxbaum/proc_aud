@@ -4,16 +4,15 @@ use crate::prelude::*;
 
 #[test]
 fn simple() {
-    let mut track = Track::default();
-    track.notes.push(Note {
+    let note = Note {
         start: Duration::from_secs_f32(0.5),
         duration: Duration::from_secs_f32(2.5),
         instrument: &Sine,
         hz: Rc::new(|_| 0.5),
         amp: Rc::new(|_| 0.5),
         pan: Rc::new(|_| 0.5),
-    });
-    let rendered = track.render(2.).samples;
+    };
+    let rendered = note.render(2.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
     assert_approx_eq(rendered[1], RenderedSample::ZERO);
     assert_approx_eq(rendered[2], RenderedSample::center(0.25));
@@ -49,16 +48,15 @@ fn multiple() {
 
 #[test]
 fn pan() {
-    let mut track = Track::default();
-    track.notes.push(Note {
+    let note = Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|_| 1.),
         amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.25),
-    });
-    let rendered = track.render(4.).samples;
+    };
+    let rendered = note.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
     assert_approx_eq(rendered[1], RenderedSample::new(0.75, 0.25));
     assert_approx_eq(rendered[2], RenderedSample::new(0., 0.));
@@ -67,16 +65,15 @@ fn pan() {
 
 #[test]
 fn pitch_shift() {
-    let mut track = Track::default();
-    track.notes.push(Note {
+    let note = Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: &Sine,
         hz: Rc::new(|x| x),
         amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.5),
-    });
-    let rendered = track.render(5.).samples;
+    };
+    let rendered = note.render(5.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
     assert_approx_eq(rendered[1], RenderedSample::center(0.124344945));
     assert_approx_eq(rendered[2], RenderedSample::center(0.42216396));
