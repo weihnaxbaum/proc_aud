@@ -4,22 +4,6 @@ use std::{rc::Rc, time::Duration};
 
 use proc_aud::prelude::*;
 
-const C3: f32 = 130.8128;
-const E3: f32 = 164.8138;
-const G3: f32 = 195.9977;
-
-const B2: f32 = 123.4708;
-const D3: f32 = 146.8324;
-// G3
-
-// C3
-// E3
-const A3: f32 = 220.;
-
-// C3
-const F3: f32 = 174.6141;
-// A3
-
 fn main() {
     let mut track = Track::default();
     let instrument = TimbreInstrument {
@@ -32,10 +16,10 @@ fn main() {
     let amp: Func = Rc::new(|x| 0.2f32.powf(x));
     for t in 0..4 {
         let hz_values = match t {
-            0 => [C3, E3, G3],
-            1 => [B2, D3, G3],
-            2 => [C3, E3, A3],
-            3 => [C3, F3, A3],
+            0 => [tet("C3"), tet("E3"), tet("G32")],
+            1 => [tet("B2"), tet("D3"), tet("G3")],
+            2 => [tet("C3"), tet("E3"), tet("A3")],
+            3 => [tet("C3"), tet("F3"), tet("A3")],
             _ => unreachable!(),
         };
         for (i, hz) in hz_values.iter().enumerate() {
