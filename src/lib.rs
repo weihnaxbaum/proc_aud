@@ -6,6 +6,8 @@ pub mod func;
 mod tests;
 
 pub mod prelude {
+    #[cfg(feature = "wav")]
+    pub use crate::core::WavEncoding;
     #[cfg(feature = "noise")]
     pub use crate::func::noise::WhiteNoise;
     pub use crate::{

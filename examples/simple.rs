@@ -27,6 +27,6 @@ fn main() {
     track
         .render(44100.)
         .normalize()
-        .save_wav("simple.wav", 32)
+        .save_wav("simple.wav", WavEncoding::I16)
         .expect("Could not write file");
 }
