@@ -43,6 +43,7 @@ fn main() {
     }
     track
         .render(44100.)
+        .normalize()
         .save_wav("instruments.wav", 32)
         .expect("Could not write file");
 }
