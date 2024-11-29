@@ -11,6 +11,7 @@ pub mod prelude {
         freq::tet,
         func::{
             modifier::{CombinedFuncs, TimbreFunc},
+            noise::WhiteNoise,
             periodic::{Sawtooth, Sine, Square, Triangle},
         },
     };

@@ -5,9 +5,11 @@ edition = "2021"
 
 [dependencies]
 hound = { version = "3", optional = true }
+fastrand = { version = "2", optional = true }
 
 [features]
 wav = ["dep:hound"]
+noise = ["dep:fastrand"]
 
 [[example]]
 name = "simple"
@@ -15,7 +17,7 @@ required-features = ["wav"]
 
 [[example]]
 name = "instruments"
-required-features = ["wav"]
+required-features = ["wav", "noise"]
 
 [[example]]
 name = "chord_progression"

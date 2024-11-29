@@ -10,13 +10,21 @@ fn main() {
     let square: Func = Rc::new(Square { hz: Rc::clone(&hz) });
     let triangle: Func = Rc::new(Triangle { hz: Rc::clone(&hz) });
     let sawtooth: Func = Rc::new(Sawtooth { hz: Rc::clone(&hz) });
+    let white_noise: Func = Rc::new(WhiteNoise);
 
-    let instruments: [Func; 6] = [
+    let instruments: [Func; 7] = [
         Rc::clone(&sine),
         Rc::clone(&square),
         Rc::clone(&triangle),
         Rc::clone(&sawtooth),
-        Rc::new(CombinedFuncs(vec![sine, square, triangle, sawtooth])),
+        Rc::clone(&white_noise),
+        Rc::new(CombinedFuncs(vec![
+            sine,
+            square,
+            triangle,
+            sawtooth,
+            white_noise,
+        ])),
         Rc::new(TimbreFunc {
             timbre: Rc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
             instrument: Rc::new(Sine { hz }),
