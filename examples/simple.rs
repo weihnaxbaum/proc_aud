@@ -5,22 +5,23 @@ use proc_aud::prelude::*;
 fn main() {
     let mut track = Track::default();
     let duration = Duration::from_secs(1);
-    let instrument = &Sine;
-    let pan: Func = Rc::new(|_| 0.5);
+    let pan: Func = Rc::new(0.5);
     track.notes.push(Note {
         start: Duration::ZERO,
         duration,
-        instrument,
-        hz: Rc::new(|x| 220. * x + 220.),
-        amp: Rc::new(|_| 1.),
+        instrument: Rc::new(Sine {
+            hz: Rc::new((220., 440.)),
+        }),
+        amp: Rc::new(1.),
         pan: Rc::clone(&pan),
     });
     track.notes.push(Note {
         start: Duration::from_secs(1),
         duration,
-        instrument,
-        hz: Rc::new(|x| -440. * x + 440.),
-        amp: Rc::new(|x| 1. - x),
+        instrument: Rc::new(Sine {
+            hz: Rc::new((440., 0.)),
+        }),
+        amp: Rc::new((1., 0.)),
         pan: Rc::clone(&pan),
     });
     track

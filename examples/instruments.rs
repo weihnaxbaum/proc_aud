@@ -4,28 +4,31 @@ use proc_aud::prelude::*;
 
 fn main() {
     let mut track = Track::default();
-    let instruments: [&dyn Instrument; 6] = [
-        &Sine,
-        &Square,
-        &Triangle,
-        &Sawtooth,
-        &CombinedInstruments {
-            instruments: vec![&Sine, &Square, &Triangle, &Sawtooth],
-        },
-        &TimbreInstrument {
-            timbre: vec![(0.5, 0.3), (1., 1.), (2., 0.5)],
-            instrument: &Sine,
-        },
+
+    let hz: Func = Rc::new(220.);
+    let sine: Func = Rc::new(Sine { hz: Rc::clone(&hz) });
+    let square: Func = Rc::new(Square { hz: Rc::clone(&hz) });
+    let triangle: Func = Rc::new(Triangle { hz: Rc::clone(&hz) });
+    let sawtooth: Func = Rc::new(Sawtooth { hz: Rc::clone(&hz) });
+
+    let instruments: [Func; 6] = [
+        Rc::clone(&sine),
+        Rc::clone(&square),
+        Rc::clone(&triangle),
+        Rc::clone(&sawtooth),
+        Rc::new(CombinedFuncs(vec![sine, square, triangle, sawtooth])),
+        Rc::new(TimbreFunc {
+            timbre: Rc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
+            instrument: Rc::new(Sine { hz }),
+        }),
     ];
-    let hz: Func = Rc::new(|_| 220.);
-    let amp: Func = Rc::new(|x| 1.5 - x);
-    let pan: Func = Rc::new(|_| 0.5);
+    let amp: Func = Rc::new((1.5, 0.5));
+    let pan: Func = Rc::new(0.5);
     for (i, instrument) in instruments.into_iter().enumerate() {
         track.notes.push(Note {
             start: Duration::from_secs(i as u64 * 3),
             duration: Duration::from_secs(2),
             instrument,
-            hz: Rc::clone(&hz),
             amp: Rc::clone(&amp),
             pan: Rc::clone(&pan),
         });

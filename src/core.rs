@@ -4,11 +4,11 @@ use std::{rc::Rc, time::Duration};
 use hound::{SampleFormat, WavSpec, WavWriter};
 
 #[derive(Clone, Default)]
-pub struct Track<'a> {
-    pub notes: Vec<Note<'a>>,
+pub struct Track {
+    pub notes: Vec<Note>,
 }
 
-impl<'a> Track<'a> {
+impl Track {
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
         let mut output = RenderOutput {
             samples: vec![],
@@ -70,16 +70,15 @@ impl RenderOutput {
 }
 
 #[derive(Clone)]
-pub struct Note<'a> {
+pub struct Note {
     pub start: Duration,
     pub duration: Duration,
-    pub instrument: &'a dyn Instrument,
-    pub hz: Func,
+    pub instrument: Func,
     pub amp: Func,
     pub pan: Func,
 }
 
-impl<'a> Note<'a> {
+impl Note {
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
         let start_sample = (self.start.as_secs_f32() * sample_rate) as usize;
         let end_sample = ((self.start + self.duration).as_secs_f32() * sample_rate) as usize;
@@ -90,30 +89,26 @@ impl<'a> Note<'a> {
             sample_rate,
         };
 
-        for current_sample in start_sample..end_sample {
-            let note_progress =
-                (current_sample - start_sample) as f32 / (end_sample - start_sample) as f32;
+        for sample in start_sample..end_sample {
+            let progress = (sample - start_sample) as f32 / (end_sample - start_sample) as f32;
 
-            let amp = (self.amp)(note_progress);
+            let time_elapsed =
+                Duration::from_secs_f32((sample - start_sample) as f32 / sample_rate);
+
+            let context = ComputeContext {
+                progress,
+                time_elapsed,
+                sample,
+            };
+
+            let val = self.instrument.compute(context);
+
+            let amp = self.amp.compute(context);
             if amp <= 0. {
                 continue;
             }
 
-            let hz = (self.hz)(note_progress);
-            if hz <= 0. {
-                continue;
-            }
-
-            let note_time_elapsed =
-                Duration::from_secs_f32((current_sample - start_sample) as f32 / sample_rate);
-
-            let sample_data = SampleData {
-                note_time_elapsed,
-                hz,
-            };
-
-            let val = self.instrument.sample(sample_data);
-            let pan = (self.pan)(note_progress).clamp(0., 1.);
+            let pan = self.pan.compute(context).clamp(0., 1.);
             if pan != 0.5 {
                 output.stereo = true;
             }
@@ -122,30 +117,37 @@ impl<'a> Note<'a> {
             rendered_sample.left *= amp;
             rendered_sample.right *= amp;
 
-            if output.samples.len() <= current_sample {
+            if output.samples.len() <= sample {
                 output
                     .samples
-                    .resize_with(current_sample + 1, RenderedSample::default);
+                    .resize_with(sample + 1, RenderedSample::default);
             }
 
-            output.samples[current_sample].left += rendered_sample.left;
-            output.samples[current_sample].right += rendered_sample.right;
+            output.samples[sample].left += rendered_sample.left;
+            output.samples[sample].right += rendered_sample.right;
         }
         output
     }
 }
 
-pub trait Instrument {
-    fn sample(&self, data: SampleData) -> f32;
+pub trait Compute {
+    fn compute(&self, context: ComputeContext) -> f32;
+}
+
+impl<T: Fn(ComputeContext) -> f32> Compute for T {
+    fn compute(&self, context: ComputeContext) -> f32 {
+        self(context)
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct SampleData {
-    pub note_time_elapsed: Duration,
-    pub hz: f32,
+pub struct ComputeContext {
+    pub progress: f32,
+    pub time_elapsed: Duration,
+    pub sample: usize,
 }
 
-pub type Func = Rc<dyn Fn(f32) -> f32>;
+pub type Func = Rc<dyn Compute>;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct RenderedSample {

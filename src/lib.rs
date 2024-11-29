@@ -1,17 +1,17 @@
 pub mod core;
 pub mod freq;
-pub mod instruments;
+pub mod func;
 
 #[cfg(test)]
 mod tests;
 
 pub mod prelude {
     pub use crate::{
-        core::{Func, Instrument, Note, RenderOutput, RenderedSample, SampleData, Track},
+        core::{Compute, ComputeContext, Func, Note, RenderOutput, RenderedSample, Track},
         freq::tet,
-        instruments::{
-            CombinedInstruments, FrequencyAdjustedInstrument, Sawtooth, Sine, Square,
-            TimbreInstrument, Triangle,
+        func::{
+            modifier::{CombinedFuncs, TimbreFunc},
+            periodic::{Sawtooth, Sine, Square, Triangle},
         },
     };
 }

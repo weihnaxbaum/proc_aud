@@ -7,10 +7,9 @@ fn simple() {
     let note = Note {
         start: Duration::from_secs_f32(0.5),
         duration: Duration::from_secs_f32(2.5),
-        instrument: &Sine,
-        hz: Rc::new(|_| 0.5),
-        amp: Rc::new(|_| 0.5),
-        pan: Rc::new(|_| 0.5),
+        instrument: Rc::new(Sine { hz: Rc::new(0.5) }),
+        amp: Rc::new(0.5),
+        pan: Rc::new(0.5),
     };
     let rendered = note.render(2.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
@@ -26,18 +25,16 @@ fn multiple() {
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &Sine,
-        hz: Rc::new(|_| 1.),
-        amp: Rc::new(|_| 0.5),
-        pan: Rc::new(|_| 0.5),
+        instrument: Rc::new(Sine { hz: Rc::new(1.) }),
+        amp: Rc::new(0.5),
+        pan: Rc::new(0.5),
     });
     track.notes.push(Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &Sine,
-        hz: Rc::new(|_| 1.25),
-        amp: Rc::new(|_| 1.),
-        pan: Rc::new(|_| 0.5),
+        instrument: Rc::new(Sine { hz: Rc::new(1.25) }),
+        amp: Rc::new(1.),
+        pan: Rc::new(0.5),
     });
     let rendered = track.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::center(0. + 0.));
@@ -51,10 +48,9 @@ fn pan() {
     let note = Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &Sine,
-        hz: Rc::new(|_| 1.),
-        amp: Rc::new(|_| 1.),
-        pan: Rc::new(|_| 0.25),
+        instrument: Rc::new(Sine { hz: Rc::new(1.) }),
+        amp: Rc::new(1.),
+        pan: Rc::new(0.25),
     };
     let rendered = note.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
@@ -68,8 +64,9 @@ fn pitch_shift() {
     let note = Note {
         start: Duration::ZERO,
         duration: Duration::from_secs(1),
-        instrument: &Sine,
-        hz: Rc::new(|x| x),
+        instrument: Rc::new(Sine {
+            hz: Rc::new((0., 1.)),
+        }),
         amp: Rc::new(|_| 1.),
         pan: Rc::new(|_| 0.5),
     };
