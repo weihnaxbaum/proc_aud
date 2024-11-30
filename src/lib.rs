@@ -14,6 +14,7 @@ pub mod prelude {
         core::{Compute, ComputeContext, Func, Note, RenderOutput, RenderedSample, Track},
         freq::tet,
         func::{
+            easing::{Exp, Pow},
             modifier::{CombinedFuncs, TimbreFunc},
             periodic::{Sawtooth, Sine, Square, Triangle},
         },

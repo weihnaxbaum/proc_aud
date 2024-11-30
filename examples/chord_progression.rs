@@ -15,7 +15,7 @@ fn main() {
         (4., 0.25),
     ]);
     let duration = Duration::from_secs(2);
-    let amp: Func = Rc::new(|context: ComputeContext| 0.2f32.powf(context.progress));
+    let amp: Func = Rc::new(Exp(0.2));
 
     for t in 0..4 {
         let hz_values = match t {
