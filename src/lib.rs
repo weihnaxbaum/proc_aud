@@ -11,7 +11,9 @@ pub mod prelude {
     #[cfg(feature = "noise")]
     pub use crate::func::noise::WhiteNoise;
     pub use crate::{
-        core::{Compute, ComputeContext, Func, Note, RenderOutput, RenderedSample, Track},
+        core::{
+            Compute, ComputeContext, Func, IntoFunc, Note, RenderOutput, RenderedSample, Track,
+        },
         freq::tet,
         func::{
             easing::{Exp, Pow},

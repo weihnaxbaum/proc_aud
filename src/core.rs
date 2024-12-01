@@ -202,6 +202,16 @@ impl<T: Fn(ComputeContext) -> f32> Compute for T {
     }
 }
 
+pub trait IntoFunc {
+    fn f(self) -> Func;
+}
+
+impl<T: Compute + 'static> IntoFunc for T {
+    fn f(self) -> Func {
+        Func(Rc::new(self))
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct ComputeContext {
     pub progress: f32,
@@ -209,7 +219,14 @@ pub struct ComputeContext {
     pub sample: usize,
 }
 
-pub type Func = Rc<dyn Compute>;
+#[derive(Clone)]
+pub struct Func(pub Rc<dyn Compute>);
+
+impl Compute for Func {
+    fn compute(&self, context: ComputeContext) -> f32 {
+        self.0.compute(context)
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct RenderedSample {

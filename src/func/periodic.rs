@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::{PI, TAU},
-    rc::Rc,
-};
+use std::f32::consts::{PI, TAU};
 
 use crate::prelude::*;
 
@@ -10,13 +7,11 @@ use crate::prelude::*;
 pub trait PeriodicCompute {
     fn hz(&self) -> Func;
 
-    fn set_hz(&mut self, hz: Func);
-
     fn compute_with_hz(&self, context: ComputeContext, hz: Func) -> f32;
 
     fn compute_with_hz_multiplier(&self, context: ComputeContext, multiplier: f32) -> f32 {
         let hz = self.hz();
-        let new_hz = Rc::new(move |context| hz.compute(context) * multiplier);
+        let new_hz = (move |context| hz.compute(context) * multiplier).f();
         self.compute_with_hz(context, new_hz)
     }
 }
@@ -28,10 +23,7 @@ pub struct Sine {
 
 impl PeriodicCompute for Sine {
     fn hz(&self) -> Func {
-        Rc::clone(&self.hz)
-    }
-    fn set_hz(&mut self, hz: Func) {
-        self.hz = hz;
+        self.hz.clone()
     }
     fn compute_with_hz(&self, context: ComputeContext, hz: Func) -> f32 {
         (TAU * context.time_elapsed.as_secs_f32() * hz.compute(context)).sin()
@@ -51,10 +43,7 @@ pub struct Square {
 
 impl PeriodicCompute for Square {
     fn hz(&self) -> Func {
-        Rc::clone(&self.hz)
-    }
-    fn set_hz(&mut self, hz: Func) {
-        self.hz = hz;
+        self.hz.clone()
     }
     fn compute_with_hz(&self, context: ComputeContext, hz: Func) -> f32 {
         let phase = (TAU * context.time_elapsed.as_secs_f32() * hz.compute(context)) % TAU;
@@ -79,10 +68,7 @@ pub struct Triangle {
 
 impl PeriodicCompute for Triangle {
     fn hz(&self) -> Func {
-        Rc::clone(&self.hz)
-    }
-    fn set_hz(&mut self, hz: Func) {
-        self.hz = hz;
+        self.hz.clone()
     }
     fn compute_with_hz(&self, context: ComputeContext, hz: Func) -> f32 {
         let phase = (TAU * context.time_elapsed.as_secs_f32() * hz.compute(context)) % TAU;
@@ -108,10 +94,7 @@ pub struct Sawtooth {
 
 impl PeriodicCompute for Sawtooth {
     fn hz(&self) -> Func {
-        Rc::clone(&self.hz)
-    }
-    fn set_hz(&mut self, hz: Func) {
-        self.hz = hz;
+        self.hz.clone()
     }
     fn compute_with_hz(&self, context: ComputeContext, hz: Func) -> f32 {
         let phase = (TAU * context.time_elapsed.as_secs_f32() * hz.compute(context)) % TAU;

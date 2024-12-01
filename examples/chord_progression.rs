@@ -15,7 +15,7 @@ fn main() {
         (4., 0.25),
     ]);
     let duration = Duration::from_secs(2);
-    let amp: Func = Rc::new(Exp(0.2));
+    let amp = Exp(0.2).f();
 
     for t in 0..4 {
         let hz_values = match t {
@@ -26,24 +26,27 @@ fn main() {
             _ => unreachable!(),
         };
         for (i, hz) in hz_values.iter().enumerate() {
-            let instrument = Rc::new(CombinedFuncs(vec![
-                Rc::new(TimbreFunc {
+            let instrument = CombinedFuncs(vec![
+                TimbreFunc {
                     timbre: Rc::clone(&timbre),
-                    instrument: Rc::new(Sine { hz: Rc::new(*hz) }),
-                }),
-                Rc::new(TimbreFunc {
+                    instrument: Rc::new(Sine { hz: hz.f() }),
+                }
+                .f(),
+                TimbreFunc {
                     timbre: Rc::clone(&timbre),
-                    instrument: Rc::new(Triangle { hz: Rc::new(*hz) }),
-                }),
-            ]));
+                    instrument: Rc::new(Triangle { hz: hz.f() }),
+                }
+                .f(),
+            ])
+            .f();
 
             let starting_pan = i as f32 / 2.;
             track.notes.push(Note {
                 start: duration * t,
                 duration,
                 instrument,
-                amp: Rc::clone(&amp),
-                pan: Rc::new((starting_pan, 0.5)),
+                amp: amp.clone(),
+                pan: (starting_pan, 0.5).f(),
             });
         }
     }
