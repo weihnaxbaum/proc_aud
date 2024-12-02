@@ -136,7 +136,6 @@ pub struct Note {
     pub start: Duration,
     pub duration: Duration,
     pub instrument: Func,
-    pub amp: Func,
     pub pan: Func,
 }
 
@@ -164,9 +163,7 @@ impl Note {
             };
 
             let val = self.instrument.compute(context);
-
-            let amp = self.amp.compute(context);
-            if amp <= 0. {
+            if val == 0. {
                 continue;
             }
 
@@ -174,10 +171,7 @@ impl Note {
             if pan != 0.5 {
                 output.stereo = true;
             }
-            let mut rendered_sample = RenderedSample::from_pan(val, pan);
-
-            rendered_sample.left *= amp;
-            rendered_sample.right *= amp;
+            let rendered_sample = RenderedSample::from_pan(val, pan);
 
             if output.samples.len() <= sample {
                 output

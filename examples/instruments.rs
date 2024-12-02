@@ -31,8 +31,7 @@ fn main() {
         track.notes.push(Note {
             start: Duration::from_secs(i as u64 * 3),
             duration: Duration::from_secs(2),
-            instrument,
-            amp: amp.clone(),
+            instrument: instrument * amp.clone(),
             pan: pan.clone(),
         });
     }

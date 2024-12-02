@@ -13,14 +13,12 @@ fn main() {
             hz: (220., 440.).f(),
         }
         .f(),
-        amp: 1.0.f(),
         pan: pan.clone(),
     });
     track.notes.push(Note {
         start: Duration::from_secs(1),
         duration,
-        instrument: Sine { hz: (440., 0.).f() }.f(),
-        amp: (1., 0.).f(),
+        instrument: Sine { hz: (440., 0.).f() }.f() * (1., 0.).f(),
         pan: pan.clone(),
     });
     track

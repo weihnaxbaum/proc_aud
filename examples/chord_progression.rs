@@ -38,14 +38,13 @@ fn main() {
                 }
                 .f(),
             ])
-            .f();
+            .f() * amp.clone();
 
             let starting_pan = i as f32 / 2.;
             track.notes.push(Note {
                 start: duration * t,
                 duration,
                 instrument,
-                amp: amp.clone(),
                 pan: (starting_pan, 0.5).f(),
             });
         }
