@@ -26,19 +26,16 @@ fn main() {
             _ => unreachable!(),
         };
         for (i, hz) in hz_values.iter().enumerate() {
-            let instrument = CombinedFuncs(vec![
-                TimbreFunc {
-                    timbre: Rc::clone(&timbre),
-                    instrument: Rc::new(Sine { hz: hz.f() }),
-                }
-                .f(),
-                TimbreFunc {
-                    timbre: Rc::clone(&timbre),
-                    instrument: Rc::new(Triangle { hz: hz.f() }),
-                }
-                .f(),
-            ])
-            .f() * amp.clone();
+            let instrument = (TimbreFunc {
+                timbre: Rc::clone(&timbre),
+                instrument: Rc::new(Sine { hz: hz.f() }),
+            }
+            .f() + TimbreFunc {
+                timbre: Rc::clone(&timbre),
+                instrument: Rc::new(Triangle { hz: hz.f() }),
+            }
+            .f())
+                * amp.clone();
 
             let starting_pan = i as f32 / 2.;
             track.notes.push(Note {

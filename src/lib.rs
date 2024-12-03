@@ -17,7 +17,7 @@ pub mod prelude {
         freq::tet,
         func::{
             easing::{Exp, Pow},
-            modifier::{CombinedFuncs, TimbreFunc},
+            modifier::TimbreFunc,
             periodic::{Sawtooth, Sine, Square, Triangle},
         },
     };

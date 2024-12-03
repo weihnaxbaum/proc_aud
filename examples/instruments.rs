@@ -18,7 +18,7 @@ fn main() {
         triangle.clone(),
         sawtooth.clone(),
         white_noise.clone(),
-        CombinedFuncs(vec![sine, square, triangle, sawtooth, white_noise]).f(),
+        sine + square + triangle + sawtooth + white_noise,
         TimbreFunc {
             timbre: Rc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
             instrument: Rc::new(Sine { hz }),
