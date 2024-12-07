@@ -28,12 +28,14 @@ fn main() {
     let amp = (1.5, 0.5).f();
     let pan = 0.5.f();
     for (i, instrument) in instruments.into_iter().enumerate() {
-        track.notes.push(Note {
-            start: Duration::from_secs(i as u64 * 3),
-            duration: Duration::from_secs(2),
-            instrument: instrument * amp.clone(),
-            pan: pan.clone(),
-        });
+        track.notes.push(
+            Note {
+                duration: Duration::from_secs(2),
+                instrument: instrument * amp.clone(),
+                pan: pan.clone(),
+            }
+            .start_at(Duration::from_secs(i as u64 * 3)),
+        );
     }
     track
         .render(44100.)

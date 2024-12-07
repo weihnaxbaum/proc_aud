@@ -7,7 +7,7 @@ use hound::{SampleFormat, WavSpec, WavWriter};
 
 #[derive(Clone, Default)]
 pub struct Track {
-    pub notes: Vec<Note>,
+    pub notes: Vec<TimedNote>,
 }
 
 impl Track {
@@ -17,15 +17,16 @@ impl Track {
             stereo: false,
             sample_rate,
         };
-        for note in &self.notes {
-            let rendered_note = note.render(sample_rate);
+        for timed_note in &self.notes {
+            let rendered_note = timed_note.note.render(sample_rate);
 
             if rendered_note.stereo {
                 output.stereo = true;
             }
 
-            let start_sample = (note.start.as_secs_f32() * sample_rate) as usize;
-            let end_sample = ((note.start + note.duration).as_secs_f32() * sample_rate) as usize;
+            let start_sample = (timed_note.start.as_secs_f32() * sample_rate) as usize;
+            let end_sample = ((timed_note.start + timed_note.note.duration).as_secs_f32()
+                * sample_rate) as usize;
 
             if output.samples.len() <= end_sample {
                 output
@@ -33,9 +34,9 @@ impl Track {
                     .resize_with(end_sample + 1, RenderedSample::default);
             }
 
-            for current_sample in start_sample..end_sample {
-                output.samples[current_sample].left += rendered_note.samples[current_sample].left;
-                output.samples[current_sample].right += rendered_note.samples[current_sample].right;
+            for (i, sample) in rendered_note.samples.into_iter().enumerate() {
+                output.samples[i + start_sample].left += sample.left;
+                output.samples[i + start_sample].right += sample.right;
             }
         }
         output
@@ -132,29 +133,39 @@ pub enum WavEncoding {
 }
 
 #[derive(Clone)]
-pub struct Note {
+pub struct TimedNote {
     pub start: Duration,
+    pub note: Note,
+}
+
+impl From<Note> for TimedNote {
+    fn from(note: Note) -> Self {
+        note.start_at(Duration::ZERO)
+    }
+}
+
+#[derive(Clone)]
+pub struct Note {
     pub duration: Duration,
     pub instrument: Func,
     pub pan: Func,
 }
 
 impl Note {
+    pub fn start_at(self, start: Duration) -> TimedNote {
+        TimedNote { start, note: self }
+    }
+
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
-        let start_sample = (self.start.as_secs_f32() * sample_rate) as usize;
-        let end_sample = ((self.start + self.duration).as_secs_f32() * sample_rate) as usize;
+        let sample_count = (self.duration.as_secs_f32() * sample_rate) as usize;
 
-        let mut output = RenderOutput {
-            samples: vec![RenderedSample::default(); end_sample],
-            stereo: false,
-            sample_rate,
-        };
+        let mut samples = Vec::with_capacity(sample_count);
+        let mut stereo = false;
 
-        for sample in start_sample..end_sample {
-            let progress = (sample - start_sample) as f32 / (end_sample - start_sample) as f32;
+        for sample in 0..sample_count {
+            let progress = sample as f32 / sample_count as f32;
 
-            let time_elapsed =
-                Duration::from_secs_f32((sample - start_sample) as f32 / sample_rate);
+            let time_elapsed = Duration::from_secs_f32(sample as f32 / sample_rate);
 
             let context = ComputeContext {
                 progress,
@@ -164,25 +175,23 @@ impl Note {
 
             let val = self.instrument.compute(context);
             if val == 0. {
+                samples.push(RenderedSample::default());
                 continue;
             }
 
             let pan = self.pan.compute(context).clamp(0., 1.);
             if pan != 0.5 {
-                output.stereo = true;
+                stereo = true;
             }
+
             let rendered_sample = RenderedSample::from_pan(val, pan);
-
-            if output.samples.len() <= sample {
-                output
-                    .samples
-                    .resize_with(sample + 1, RenderedSample::default);
-            }
-
-            output.samples[sample].left += rendered_sample.left;
-            output.samples[sample].right += rendered_sample.right;
+            samples.push(rendered_sample);
         }
-        output
+        RenderOutput {
+            samples,
+            stereo,
+            sample_rate,
+        }
     }
 }
 

@@ -6,21 +6,25 @@ fn main() {
     let mut track = Track::default();
     let duration = Duration::from_secs(1);
     let pan = 0.5.f();
-    track.notes.push(Note {
-        start: Duration::ZERO,
-        duration,
-        instrument: Sine {
-            hz: (220., 440.).f(),
+    track.notes.push(
+        Note {
+            duration,
+            instrument: Sine {
+                hz: (220., 440.).f(),
+            }
+            .f(),
+            pan: pan.clone(),
         }
-        .f(),
-        pan: pan.clone(),
-    });
-    track.notes.push(Note {
-        start: Duration::from_secs(1),
-        duration,
-        instrument: Sine { hz: (440., 0.).f() }.f() * (1., 0.).f(),
-        pan: pan.clone(),
-    });
+        .into(),
+    );
+    track.notes.push(
+        Note {
+            duration,
+            instrument: Sine { hz: (440., 0.).f() }.f() * (1., 0.).f(),
+            pan: pan.clone(),
+        }
+        .start_at(Duration::from_secs(1)),
+    );
     track
         .render(44100.)
         .normalize()

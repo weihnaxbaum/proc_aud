@@ -4,13 +4,16 @@ use crate::prelude::*;
 
 #[test]
 fn simple() {
-    let note = Note {
-        start: Duration::from_secs_f32(0.5),
-        duration: Duration::from_secs_f32(2.5),
-        instrument: Sine { hz: 0.5.f() }.f() * 0.5.f(),
-        pan: 0.5.f(),
-    };
-    let rendered = note.render(2.).samples;
+    let mut track = Track::default();
+    track.notes.push(
+        Note {
+            duration: Duration::from_secs_f32(2.5),
+            instrument: Sine { hz: 0.5.f() }.f() * 0.5.f(),
+            pan: 0.5.f(),
+        }
+        .start_at(Duration::from_secs_f32(0.5)),
+    );
+    let rendered = track.render(2.).samples;
     assert_approx_eq(rendered[0], RenderedSample::ZERO);
     assert_approx_eq(rendered[1], RenderedSample::ZERO);
     assert_approx_eq(rendered[2], RenderedSample::center(0.25));
@@ -21,18 +24,22 @@ fn simple() {
 #[test]
 fn multiple() {
     let mut track = Track::default();
-    track.notes.push(Note {
-        start: Duration::ZERO,
-        duration: Duration::from_secs(1),
-        instrument: Sine { hz: 1.0.f() }.f() * 0.5.f(),
-        pan: 0.5.f(),
-    });
-    track.notes.push(Note {
-        start: Duration::ZERO,
-        duration: Duration::from_secs(1),
-        instrument: Sine { hz: 1.25.f() }.f(),
-        pan: 0.5.f(),
-    });
+    track.notes.push(
+        Note {
+            duration: Duration::from_secs(1),
+            instrument: Sine { hz: 1.0.f() }.f() * 0.5.f(),
+            pan: 0.5.f(),
+        }
+        .into(),
+    );
+    track.notes.push(
+        Note {
+            duration: Duration::from_secs(1),
+            instrument: Sine { hz: 1.25.f() }.f(),
+            pan: 0.5.f(),
+        }
+        .into(),
+    );
     let rendered = track.render(4.).samples;
     assert_approx_eq(rendered[0], RenderedSample::center(0. + 0.));
     assert_approx_eq(rendered[1], RenderedSample::center(0.25 + 0.46193975));
@@ -43,7 +50,6 @@ fn multiple() {
 #[test]
 fn pan() {
     let note = Note {
-        start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: Sine { hz: 1.0.f() }.f(),
         pan: 0.25.f(),
@@ -58,7 +64,6 @@ fn pan() {
 #[test]
 fn pitch_shift() {
     let note = Note {
-        start: Duration::ZERO,
         duration: Duration::from_secs(1),
         instrument: Sine { hz: (0., 1.).f() }.f(),
         pan: 0.5.f(),
