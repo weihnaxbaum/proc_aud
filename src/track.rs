@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::{note::TimedNote, prelude::*};
 
 #[derive(Clone, Default)]
@@ -6,6 +8,29 @@ pub struct Track {
 }
 
 impl Track {
+    pub fn from_cycle(
+        rhythm: &[Duration],
+        instruments: &[Func],
+        pans: &[Func],
+        len: usize,
+    ) -> Self {
+        let mut notes = Vec::with_capacity(len);
+        let mut start = Duration::ZERO;
+        for i in 0..len {
+            let duration = rhythm[i % rhythm.len()];
+            notes.push(
+                Note {
+                    duration,
+                    instrument: instruments[i % instruments.len()].clone(),
+                    pan: pans[i % pans.len()].clone(),
+                }
+                .start_at(start),
+            );
+            start += duration;
+        }
+        Track { notes }
+    }
+
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
         let mut output = RenderOutput {
             samples: vec![],
