@@ -31,6 +31,34 @@ impl Track {
         Track { notes }
     }
 
+    pub fn from_chord(durations: &[Duration], instruments: &[Func], pans: &[Func]) -> Self {
+        let mut track = Track::default();
+        track.chord(Duration::ZERO, durations, instruments, pans);
+        track
+    }
+
+    pub fn chord(
+        &mut self,
+        start: Duration,
+        durations: &[Duration],
+        instruments: &[Func],
+        pans: &[Func],
+    ) -> &mut Self {
+        let len = instruments.len();
+        self.notes.reserve(len);
+        for i in 0..len {
+            self.notes.push(
+                Note {
+                    duration: durations[i % durations.len()],
+                    instrument: instruments[i].clone(),
+                    pan: pans[i % pans.len()].clone(),
+                }
+                .start_at(start),
+            );
+        }
+        self
+    }
+
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
         let mut output = RenderOutput {
             samples: vec![],

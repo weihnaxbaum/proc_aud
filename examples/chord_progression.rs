@@ -18,35 +18,33 @@ fn main() {
     let amp = Exp(0.2).f();
 
     for t in 0..4 {
-        let hz_values = match t {
-            0 => [tet("C3"), tet("E3"), tet("G3")],
-            1 => [tet("B2"), tet("D3"), tet("G3")],
-            2 => [tet("C3"), tet("E3"), tet("A3")],
-            3 => [tet("C3"), tet("F3"), tet("A3")],
+        let instruments = match t {
+            0 => ["C3", "E3", "G3"],
+            1 => ["B2", "D3", "G3"],
+            2 => ["C3", "E3", "A3"],
+            3 => ["C3", "F3", "A3"],
             _ => unreachable!(),
-        };
-        for (i, hz) in hz_values.iter().enumerate() {
-            let instrument = (TimbreFunc {
+        }
+        .map(|v| {
+            let hz = tet(v).f();
+            (TimbreFunc {
                 timbre: Rc::clone(&timbre),
-                instrument: Rc::new(Sine { hz: hz.f() }),
+                instrument: Rc::new(Sine { hz: hz.clone() }),
             }
             .f() + TimbreFunc {
                 timbre: Rc::clone(&timbre),
-                instrument: Rc::new(Triangle { hz: hz.f() }),
+                instrument: Rc::new(Triangle { hz }),
             }
             .f())
-                * amp.clone();
+                * amp.clone()
+        });
 
-            let starting_pan = i as f32 / 2.;
-            track.notes.push(
-                Note {
-                    duration,
-                    instrument,
-                    pan: (starting_pan, 0.5).f(),
-                }
-                .start_at(duration * t),
-            );
-        }
+        track.chord(
+            duration * t,
+            &[duration],
+            &instruments,
+            &[(0., 0.5).f(), 0.5.f(), (0.75, 0.5).f()],
+        );
     }
     track
         .render(44100.)
