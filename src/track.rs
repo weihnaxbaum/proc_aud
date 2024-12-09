@@ -14,11 +14,23 @@ impl Track {
         pans: &[Func],
         len: usize,
     ) -> Self {
-        let mut notes = Vec::with_capacity(len);
-        let mut start = Duration::ZERO;
+        let mut track = Track::default();
+        track.cycle(Duration::ZERO, rhythm, instruments, pans, len);
+        track
+    }
+
+    pub fn cycle(
+        &mut self,
+        mut start: Duration,
+        rhythm: &[Duration],
+        instruments: &[Func],
+        pans: &[Func],
+        len: usize,
+    ) -> &mut Self {
+        self.notes.reserve(len);
         for i in 0..len {
             let duration = rhythm[i % rhythm.len()];
-            notes.push(
+            self.notes.push(
                 Note {
                     duration,
                     instrument: instruments[i % instruments.len()].clone(),
@@ -28,7 +40,7 @@ impl Track {
             );
             start += duration;
         }
-        Track { notes }
+        self
     }
 
     pub fn from_chord(durations: &[Duration], instruments: &[Func], pans: &[Func]) -> Self {
