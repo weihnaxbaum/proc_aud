@@ -15,7 +15,10 @@ pub mod prelude {
     #[cfg(feature = "wav")]
     pub use crate::wav::WavEncoding;
     pub use crate::{
-        freq::tet,
+        freq::{
+            tet,
+            triad::{maj_triad, min_triad},
+        },
         func::{
             easing::{Exp, Pow},
             modifier::TimbreFunc,

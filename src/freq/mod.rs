@@ -1,8 +1,13 @@
 pub const A4: f32 = 440.;
 const A4_SEMITONE: i32 = 57;
 
+pub mod triad;
+
 pub fn tet(note: &str) -> f32 {
-    let semitone = semitone(note);
+    semitone_tet(semitone(note))
+}
+
+fn semitone_tet(semitone: i32) -> f32 {
     let diff = semitone - A4_SEMITONE;
     A4 * 2.0f32.powf(1. / 12.).powi(diff)
 }

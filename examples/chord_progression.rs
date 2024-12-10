@@ -19,14 +19,14 @@ fn main() {
 
     for t in 0..4 {
         let instruments = match t {
-            0 => ["C3", "E3", "G3"],
-            1 => ["B2", "D3", "G3"],
-            2 => ["C3", "E3", "A3"],
-            3 => ["C3", "F3", "A3"],
+            0 => maj_triad("C3", 0),
+            1 => maj_triad("G2", 1),
+            2 => min_triad("A2", 1),
+            3 => maj_triad("F2", 2),
             _ => unreachable!(),
         }
         .map(|v| {
-            let hz = tet(v).f();
+            let hz = v.f();
             (TimbreFunc {
                 timbre: Rc::clone(&timbre),
                 instrument: Rc::new(Sine { hz: hz.clone() }),
