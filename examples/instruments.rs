@@ -1,4 +1,4 @@
-use std::{rc::Rc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use proc_aud::prelude::*;
 
@@ -20,8 +20,8 @@ fn main() {
         white_noise.clone(),
         sine + square + triangle + sawtooth + white_noise,
         TimbreFunc {
-            timbre: Rc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
-            instrument: Rc::new(Sine { hz }),
+            timbre: Arc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
+            instrument: Arc::new(Sine { hz }),
         }
         .f(),
     ];

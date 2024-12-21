@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 hound = { version = "3", optional = true }
 fastrand = { version = "2", optional = true }
+rayon = "1.10.0"
 
 [features]
 wav = ["dep:hound"]

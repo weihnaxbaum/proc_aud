@@ -4,7 +4,7 @@ use crate::prelude::*;
 
 // TODO: implement `Compute` for all `PeriodicCompute` implementors:
 // Possibly difficult due to conflicting trait implementations
-pub trait PeriodicCompute {
+pub trait PeriodicCompute: Send + Sync {
     fn hz(&self) -> Func;
 
     fn compute_with_hz(&self, context: ComputeContext, hz: f32) -> f32;

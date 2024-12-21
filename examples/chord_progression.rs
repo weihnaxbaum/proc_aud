@@ -1,13 +1,13 @@
 //! I–V–vi–IV progression in C major
 
-use std::{rc::Rc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use proc_aud::prelude::*;
 
 fn main() {
     let mut track = Track::default();
 
-    let timbre = Rc::new(vec![
+    let timbre = Arc::new(vec![
         (0.25, 0.1),
         (0.5, 0.3),
         (1., 1.),
@@ -28,12 +28,12 @@ fn main() {
         .map(|v| {
             let hz = v.f();
             (TimbreFunc {
-                timbre: Rc::clone(&timbre),
-                instrument: Rc::new(Sine { hz: hz.clone() }),
+                timbre: Arc::clone(&timbre),
+                instrument: Arc::new(Sine { hz: hz.clone() }),
             }
             .f() + TimbreFunc {
-                timbre: Rc::clone(&timbre),
-                instrument: Rc::new(Triangle { hz }),
+                timbre: Arc::clone(&timbre),
+                instrument: Arc::new(Triangle { hz }),
             }
             .f())
                 * amp.clone()

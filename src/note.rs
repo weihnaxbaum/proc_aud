@@ -1,4 +1,9 @@
-use std::time::Duration;
+use std::{
+    sync::atomic::{AtomicBool, Ordering},
+    time::Duration,
+};
+
+use rayon::prelude::*;
 
 use crate::prelude::*;
 
@@ -29,37 +34,38 @@ impl Note {
     pub fn render(&self, sample_rate: f32) -> RenderOutput {
         let sample_count = (self.duration.as_secs_f32() * sample_rate) as usize;
 
-        let mut samples = Vec::with_capacity(sample_count);
-        let mut stereo = false;
+        let stereo = AtomicBool::new(false);
 
-        for sample in 0..sample_count {
-            let progress = sample as f32 / sample_count as f32;
+        let samples = (0..sample_count)
+            .into_par_iter()
+            .map(|sample| {
+                let progress = sample as f32 / sample_count as f32;
 
-            let time_elapsed = Duration::from_secs_f32(sample as f32 / sample_rate);
+                let time_elapsed = Duration::from_secs_f32(sample as f32 / sample_rate);
 
-            let context = ComputeContext {
-                progress,
-                time_elapsed,
-                sample,
-            };
+                let context = ComputeContext {
+                    progress,
+                    time_elapsed,
+                    sample,
+                };
 
-            let val = self.instrument.compute(context);
-            if val == 0. {
-                samples.push(RenderedSample::default());
-                continue;
-            }
+                let val = self.instrument.compute(context);
+                if val == 0. {
+                    return RenderedSample::default();
+                }
 
-            let pan = self.pan.compute(context).clamp(0., 1.);
-            if pan != 0.5 {
-                stereo = true;
-            }
+                let pan = self.pan.compute(context).clamp(0., 1.);
+                if pan != 0.5 && !stereo.load(Ordering::Relaxed) {
+                    stereo.store(true, Ordering::Relaxed);
+                }
 
-            let rendered_sample = RenderedSample::from_pan(val, pan);
-            samples.push(rendered_sample);
-        }
+                RenderedSample::from_pan(val, pan)
+            })
+            .collect();
+
         RenderOutput {
             samples,
-            stereo,
+            stereo: stereo.load(Ordering::Relaxed),
             sample_rate,
         }
     }

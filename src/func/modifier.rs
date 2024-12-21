@@ -1,10 +1,10 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::{func::periodic::PeriodicCompute, prelude::*};
 
 pub struct TimbreFunc {
-    pub timbre: Rc<Vec<(f32, f32)>>,
-    pub instrument: Rc<dyn PeriodicCompute>,
+    pub timbre: Arc<Vec<(f32, f32)>>,
+    pub instrument: Arc<dyn PeriodicCompute>,
 }
 
 impl Compute for TimbreFunc {

@@ -1,4 +1,4 @@
-use std::{rc::Rc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 pub mod easing;
 pub mod math;
@@ -7,11 +7,11 @@ pub mod modifier;
 pub mod noise;
 pub mod periodic;
 
-pub trait Compute {
+pub trait Compute: Send + Sync {
     fn compute(&self, context: ComputeContext) -> f32;
 }
 
-impl<T: Fn(ComputeContext) -> f32> Compute for T {
+impl<T: Fn(ComputeContext) -> f32 + Send + Sync> Compute for T {
     fn compute(&self, context: ComputeContext) -> f32 {
         self(context)
     }
@@ -25,7 +25,7 @@ pub struct ComputeContext {
 }
 
 #[derive(Clone)]
-pub struct Func(pub Rc<dyn Compute>);
+pub struct Func(pub Arc<dyn Compute>);
 
 impl Compute for Func {
     fn compute(&self, context: ComputeContext) -> f32 {
@@ -39,6 +39,6 @@ pub trait IntoFunc {
 
 impl<T: Compute + 'static> IntoFunc for T {
     fn f(self) -> Func {
-        Func(Rc::new(self))
+        Func(Arc::new(self))
     }
 }
