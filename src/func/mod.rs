@@ -27,8 +27,16 @@ pub struct ComputeContext {
 #[derive(Clone)]
 pub struct Func(pub Arc<dyn Compute>);
 
-impl Compute for Func {
-    fn compute(&self, context: ComputeContext) -> f32 {
+impl IntoFunc for Func {
+    fn f(self) -> Func {
+        self
+    }
+}
+
+// Func doesn't impl `Compute` so that it can impl `IntoFunc`
+// without confilicting trait impls
+impl Func {
+    pub fn compute(&self, context: ComputeContext) -> f32 {
         self.0.compute(context)
     }
 }

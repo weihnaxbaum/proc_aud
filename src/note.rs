@@ -27,6 +27,24 @@ pub struct Note {
 }
 
 impl Note {
+    /// Constructs a note from a duration, an instrument and a pan.
+    ///
+    /// Note that `instrument` and `pan` can be of any type that implements [`IntoFunc`].
+    pub fn new(duration: Duration, instrument: impl IntoFunc, pan: impl IntoFunc) -> Self {
+        Self {
+            duration,
+            instrument: instrument.f(),
+            pan: pan.f(),
+        }
+    }
+
+    /// Constructs a centered note from a duration and an instrument.
+    ///
+    /// Note that `instrument` can be of any type that implements [`IntoFunc`].
+    pub fn center(duration: Duration, instrument: impl IntoFunc) -> Self {
+        Self::new(duration, instrument, 0.5)
+    }
+
     pub fn start_at(self, start: Duration) -> TimedNote {
         TimedNote { start, note: self }
     }
