@@ -15,6 +15,12 @@ pub struct Sine {
     pub hz: Func,
 }
 
+impl Sine {
+    pub fn new(hz: impl IntoFunc) -> Self {
+        Self { hz: hz.f() }
+    }
+}
+
 impl PeriodicCompute for Sine {
     fn hz(&self) -> Func {
         self.hz.clone()
@@ -33,6 +39,12 @@ impl Compute for Sine {
 #[derive(Clone)]
 pub struct Square {
     pub hz: Func,
+}
+
+impl Square {
+    pub fn new(hz: impl IntoFunc) -> Self {
+        Self { hz: hz.f() }
+    }
 }
 
 impl PeriodicCompute for Square {
@@ -60,6 +72,12 @@ pub struct Triangle {
     pub hz: Func,
 }
 
+impl Triangle {
+    pub fn new(hz: impl IntoFunc) -> Self {
+        Self { hz: hz.f() }
+    }
+}
+
 impl PeriodicCompute for Triangle {
     fn hz(&self) -> Func {
         self.hz.clone()
@@ -84,6 +102,12 @@ impl Compute for Triangle {
 #[derive(Clone)]
 pub struct Sawtooth {
     pub hz: Func,
+}
+
+impl Sawtooth {
+    pub fn new(hz: impl IntoFunc) -> Self {
+        Self { hz: hz.f() }
+    }
 }
 
 impl PeriodicCompute for Sawtooth {

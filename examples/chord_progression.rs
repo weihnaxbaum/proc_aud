@@ -25,15 +25,14 @@ fn main() {
             3 => maj_triad("F2", 2),
             _ => unreachable!(),
         }
-        .map(|v| {
-            let hz = v.f();
+        .map(|hz| {
             (TimbreFunc {
                 timbre: Arc::clone(&timbre),
-                instrument: Arc::new(Sine { hz: hz.clone() }),
+                instrument: Arc::new(Sine::new(hz)),
             }
             .f() + TimbreFunc {
                 timbre: Arc::clone(&timbre),
-                instrument: Arc::new(Triangle { hz }),
+                instrument: Arc::new(Triangle::new(hz)),
             }
             .f())
                 * amp.clone()

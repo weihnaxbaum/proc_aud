@@ -5,13 +5,7 @@ use proc_aud::prelude::*;
 fn main() {
     Track::from_cycle(
         &[Duration::from_secs(1)],
-        &[
-            Sine {
-                hz: (220., 440.).f(),
-            }
-            .f(),
-            Sine { hz: (440., 0.).f() }.f(),
-        ],
+        &[Sine::new((220., 440.)).f(), Sine::new((440., 0.)).f()],
         &[0.5.f()],
         2,
     )

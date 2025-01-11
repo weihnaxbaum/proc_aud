@@ -8,7 +8,7 @@ fn simple() {
     track.notes.push(
         Note {
             duration: Duration::from_secs_f32(2.5),
-            instrument: Sine { hz: 0.5.f() }.f() * 0.5.f(),
+            instrument: Sine::new(0.5).f() * 0.5.f(),
             pan: 0.5.f(),
         }
         .start_at(Duration::from_secs_f32(0.5)),
@@ -27,7 +27,7 @@ fn multiple() {
     track.notes.push(
         Note {
             duration: Duration::from_secs(1),
-            instrument: Sine { hz: 1.0.f() }.f() * 0.5.f(),
+            instrument: Sine::new(1.).f() * 0.5.f(),
             pan: 0.5.f(),
         }
         .into(),
@@ -35,7 +35,7 @@ fn multiple() {
     track.notes.push(
         Note {
             duration: Duration::from_secs(1),
-            instrument: Sine { hz: 1.25.f() }.f(),
+            instrument: Sine::new(1.25).f(),
             pan: 0.5.f(),
         }
         .into(),
@@ -51,7 +51,7 @@ fn multiple() {
 fn pan() {
     let note = Note {
         duration: Duration::from_secs(1),
-        instrument: Sine { hz: 1.0.f() }.f(),
+        instrument: Sine::new(1.).f(),
         pan: 0.25.f(),
     };
     let rendered = note.render(4.).samples;
@@ -65,7 +65,7 @@ fn pan() {
 fn pitch_shift() {
     let note = Note {
         duration: Duration::from_secs(1),
-        instrument: Sine { hz: (0., 1.).f() }.f(),
+        instrument: Sine::new((0., 1.)).f(),
         pan: 0.5.f(),
     };
     let rendered = note.render(5.).samples;

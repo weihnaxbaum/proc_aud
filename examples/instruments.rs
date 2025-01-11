@@ -5,11 +5,11 @@ use proc_aud::prelude::*;
 fn main() {
     let mut track = Track::default();
 
-    let hz = 220.0.f();
-    let sine = Sine { hz: hz.clone() }.f();
-    let square = Square { hz: hz.clone() }.f();
-    let triangle = Triangle { hz: hz.clone() }.f();
-    let sawtooth = Sawtooth { hz: hz.clone() }.f();
+    let hz = 220.;
+    let sine = Sine::new(hz).f();
+    let square = Square::new(hz).f();
+    let triangle = Triangle::new(hz).f();
+    let sawtooth = Sawtooth::new(hz).f();
     let white_noise = WhiteNoise.f();
 
     let instruments: [Func; 7] = [
@@ -21,7 +21,7 @@ fn main() {
         sine + square + triangle + sawtooth + white_noise,
         TimbreFunc {
             timbre: Arc::new(vec![(0.5, 0.3), (1., 1.), (2., 0.5)]),
-            instrument: Arc::new(Sine { hz }),
+            instrument: Arc::new(Sine::new(hz)),
         }
         .f(),
     ];
