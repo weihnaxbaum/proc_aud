@@ -6,10 +6,10 @@ fn main() {
     let mut track = Track::default();
 
     let hz = 220.;
-    let sine = Sine::new(hz).f();
-    let square = Square::new(hz).f();
-    let triangle = Triangle::new(hz).f();
-    let sawtooth = Sawtooth::new(hz).f();
+    let sine = Sine::f(hz);
+    let square = Square::f(hz);
+    let triangle = Triangle::f(hz);
+    let sawtooth = Sawtooth::f(hz);
     let white_noise = WhiteNoise.f();
 
     let instruments: [Func; 7] = [

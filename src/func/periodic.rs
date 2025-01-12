@@ -19,6 +19,10 @@ impl Sine {
     pub fn new(hz: impl IntoFunc) -> Self {
         Self { hz: hz.f() }
     }
+
+    pub fn f(hz: impl IntoFunc) -> Func {
+        Self::new(hz).f()
+    }
 }
 
 impl PeriodicCompute for Sine {
@@ -44,6 +48,10 @@ pub struct Square {
 impl Square {
     pub fn new(hz: impl IntoFunc) -> Self {
         Self { hz: hz.f() }
+    }
+
+    pub fn f(hz: impl IntoFunc) -> Func {
+        Self::new(hz).f()
     }
 }
 
@@ -76,6 +84,10 @@ impl Triangle {
     pub fn new(hz: impl IntoFunc) -> Self {
         Self { hz: hz.f() }
     }
+
+    pub fn f(hz: impl IntoFunc) -> Func {
+        Self::new(hz).f()
+    }
 }
 
 impl PeriodicCompute for Triangle {
@@ -107,6 +119,10 @@ pub struct Sawtooth {
 impl Sawtooth {
     pub fn new(hz: impl IntoFunc) -> Self {
         Self { hz: hz.f() }
+    }
+
+    pub fn f(hz: impl IntoFunc) -> Func {
+        Self::new(hz).f()
     }
 }
 

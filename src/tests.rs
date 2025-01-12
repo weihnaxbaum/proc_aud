@@ -8,7 +8,7 @@ fn simple() {
     track.notes.push(
         Note {
             duration: Duration::from_secs_f32(2.5),
-            instrument: Sine::new(0.5).f() * 0.5.f(),
+            instrument: Sine::f(0.5) * 0.5.f(),
             pan: 0.5.f(),
         }
         .start_at(Duration::from_secs_f32(0.5)),
@@ -27,7 +27,7 @@ fn multiple() {
     track.notes.push(
         Note {
             duration: Duration::from_secs(1),
-            instrument: Sine::new(1.).f() * 0.5.f(),
+            instrument: Sine::f(1.) * 0.5.f(),
             pan: 0.5.f(),
         }
         .into(),

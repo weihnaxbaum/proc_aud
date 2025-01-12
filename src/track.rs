@@ -82,7 +82,7 @@ impl Track {
     ///
     /// let mut track = Track::default();
     /// track.notes.push(
-    ///     Note::center(Duration::from_secs(1), Sine::new(440.).f() * Exp(0.5).f(),).into()
+    ///     Note::center(Duration::from_secs(1), Sine::f(440.) * Exp(0.5).f(),).into()
     /// );
     /// assert_eq!(track.duration(), track.repeat(0).duration());
     /// assert_eq!(track.repeat(2).duration(), Duration::from_secs(3));
@@ -111,7 +111,7 @@ impl Track {
     ///
     /// let mut track = Track::default();
     ///
-    /// let instrument = Sine::new(440.).f();
+    /// let instrument = Sine::f(440.);
     /// let pan = 0.5.f();
     ///
     /// track.notes.push( // 2 secs
