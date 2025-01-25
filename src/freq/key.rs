@@ -51,3 +51,57 @@ pub fn maj_degree_to_semitone(degree: u8) -> i32 {
         v => panic!("Expected `degree` to be from 1 to 7, found {}", v),
     }
 }
+
+/// Calculates the frequency of a note in minor scale using
+/// [12-tone equal temperament](https://en.wikipedia.org/wiki/12_equal_temperament)
+/// based on a
+/// [tonic](https://en.wikipedia.org/wiki/Tonic_(music))
+/// and a
+/// [scale degree](https://en.wikipedia.org/wiki/Degree_(music)).
+///
+/// # Panics
+///
+/// If the scale degree isn't in the range 1 to 7.
+///
+/// # Examples
+///
+/// ```
+/// use proc_aud::prelude::*;
+///
+/// assert_eq!(min_key_tet("A4", 1), tet("A4"));
+/// assert_eq!(min_key_tet("A4", 2), tet("B4"));
+/// assert_eq!(min_key_tet("A4", 3), tet("C5"));
+/// assert_eq!(min_key_tet("A4", 4), tet("D5"));
+///
+/// assert_eq!(min_key_tet("Bb4", 1), tet("Bb4"));
+/// assert_eq!(min_key_tet("Bb4", 2), tet("C5"));
+/// assert_eq!(min_key_tet("Bb4", 3), tet("Db5"));
+/// assert_eq!(min_key_tet("Bb4", 4), tet("Eb5"));
+///
+/// ```
+pub fn min_key_tet(tonic: &str, degree: u8) -> f32 {
+    semitone_tet(semitone(tonic) + min_degree_to_semitone(degree))
+}
+
+/// Calculates the distance from the tonic in semitones based on a
+/// [scale degree](https://en.wikipedia.org/wiki/Degree_(music)) in minor scale.
+/// The scale degree can range from 1 to 7.
+///
+/// Minor scales follow the scheme 1 whole step, 1 half step,
+/// 2 whole steps, 1 half step, 2 whole steps.
+///
+/// # Panics
+///
+/// If the scale degree isn't in the range 1 to 7.
+pub fn min_degree_to_semitone(degree: u8) -> i32 {
+    match degree {
+        1 => 0,
+        2 => 2,
+        3 => 3,
+        4 => 5,
+        5 => 7,
+        6 => 8,
+        7 => 10,
+        v => panic!("Expected `degree` to be from 1 to 7, found {}", v),
+    }
+}
