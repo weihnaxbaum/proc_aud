@@ -1,6 +1,7 @@
 pub const A4: f32 = 440.;
 const A4_SEMITONE: i32 = 57;
 
+pub mod key;
 pub mod triad;
 
 pub fn tet(note: &str) -> f32 {
