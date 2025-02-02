@@ -5,6 +5,6 @@ pub struct WhiteNoise;
 
 impl Compute for WhiteNoise {
     fn compute(&self, _: ComputeContext) -> f32 {
-        fastrand::f32()
+        fastrand::f32() * 2.0 - 1.0
     }
 }
