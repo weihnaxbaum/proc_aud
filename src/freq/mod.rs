@@ -1,6 +1,7 @@
 pub const A4: f32 = 440.;
 const A4_SEMITONE: i32 = 57;
 
+pub mod chord_progression;
 pub mod key;
 pub mod triad;
 

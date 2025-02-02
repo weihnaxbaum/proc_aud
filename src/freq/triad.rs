@@ -46,6 +46,15 @@ pub fn triad(root: &str, inversion: i8, third_diff: i32, fifth_diff: i32) -> [f3
 /// If you need the frequencies sorted, use [`triad`] instead.
 pub fn triad_unsorted(root: &str, inversion: i8, third_diff: i32, fifth_diff: i32) -> [f32; 3] {
     let root = semitone(root);
+    triad_unsorted_semitones(root, inversion, third_diff, fifth_diff)
+}
+
+pub(crate) fn triad_unsorted_semitones(
+    root: i32,
+    inversion: i8,
+    third_diff: i32,
+    fifth_diff: i32,
+) -> [f32; 3] {
     let third = root + third_diff;
     let fifth = root + fifth_diff;
     let mut triad = [root, third, fifth];

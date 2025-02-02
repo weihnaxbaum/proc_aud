@@ -16,6 +16,7 @@ pub mod prelude {
     pub use crate::wav::WavEncoding;
     pub use crate::{
         freq::{
+            chord_progression::{maj_chord_progression, min_chord_progression},
             key::{maj_key_tet, min_key_tet},
             tet,
             triad::{maj_triad, min_triad},
