@@ -1,6 +1,6 @@
-use std::io::{Seek, Write};
+use std::io::{Read, Seek, Write};
 
-use hound::{SampleFormat, WavSpec, WavWriter};
+use hound::{SampleFormat, WavReader, WavSpec, WavWriter};
 
 use crate::prelude::*;
 
@@ -33,6 +33,56 @@ impl RenderOutput {
         }
         writer.finalize()?;
         Ok(())
+    }
+
+    pub fn from_wav<R: Read>(reader: R) -> hound::Result<Self> {
+        let mut wav_reader = WavReader::new(reader)?;
+        let spec = wav_reader.spec();
+        let stereo = match spec.channels {
+            1 => false,
+            2 => true,
+            _ => return Err(hound::Error::Unsupported),
+        };
+        let sample_rate = spec.sample_rate as f32;
+        let samples = if spec.sample_format == SampleFormat::Float {
+            let hound_samples = wav_reader.samples::<f32>();
+            let mut samples: Vec<RenderedSample> = Vec::with_capacity(hound_samples.len());
+            for (i, sample) in hound_samples.enumerate() {
+                if stereo && i % 2 == 1 {
+                    let last = samples.last_mut().unwrap();
+                    last.right = sample?;
+                } else {
+                    samples.push(RenderedSample::center(sample?));
+                }
+            }
+            samples
+        } else {
+            let normalization = match spec.bits_per_sample {
+                8 => u8::MAX as f32,
+                16 => u16::MAX as f32,
+                24 => 0xFFFFFF as f32,
+                32 => u32::MAX as f32,
+                _ => return Err(hound::Error::Unsupported),
+            };
+            let hound_samples = wav_reader.samples::<i32>();
+            let mut samples: Vec<RenderedSample> = Vec::with_capacity(hound_samples.len());
+            for (i, sample) in hound_samples.enumerate() {
+                if stereo && i % 2 == 1 {
+                    let last = samples.last_mut().unwrap();
+                    last.right = sample? as f32 / i32::MAX as f32;
+                } else {
+                    samples.push(RenderedSample::center(sample? as f32 / normalization));
+                }
+            }
+            samples
+        };
+
+        let render_output = Self {
+            samples,
+            sample_rate,
+            stereo,
+        };
+        Ok(render_output)
     }
 }
 

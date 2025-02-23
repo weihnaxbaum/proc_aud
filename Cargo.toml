@@ -23,3 +23,7 @@ required-features = ["wav", "noise"]
 [[example]]
 name = "chord_progression"
 required-features = ["wav"]
+
+[[example]]
+name = "load_wav"
+required-features = ["wav"]
