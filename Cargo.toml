@@ -11,6 +11,7 @@ rayon = "1.10.0"
 [features]
 wav = ["dep:hound"]
 noise = ["dep:fastrand"]
+gen = ["dep:fastrand"]
 
 [[example]]
 name = "simple"
@@ -27,3 +28,7 @@ required-features = ["wav"]
 [[example]]
 name = "load_wav"
 required-features = ["wav"]
+
+[[example]]
+name = "gen"
+required-features = ["gen", "wav"]

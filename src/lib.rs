@@ -1,5 +1,7 @@
 pub mod freq;
 pub mod func;
+#[cfg(feature = "gen")]
+pub mod gen;
 pub mod note;
 pub mod render;
 pub mod track;
@@ -12,6 +14,8 @@ mod tests;
 pub mod prelude {
     #[cfg(feature = "noise")]
     pub use crate::func::noise::WhiteNoise;
+    #[cfg(feature = "gen")]
+    pub use crate::gen::Gen;
     #[cfg(feature = "wav")]
     pub use crate::wav::WavEncoding;
     pub use crate::{
