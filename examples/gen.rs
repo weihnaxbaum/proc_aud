@@ -8,6 +8,7 @@ fn main() {
         note_duration: Duration::from_secs_f32(0.5),
         min_semitone_shift: -24.0,
         max_semitone_shift: 24.0,
+        max_semitone_jump: 12,
         seed: 0,
     }
     .gen(Duration::from_secs(4))
