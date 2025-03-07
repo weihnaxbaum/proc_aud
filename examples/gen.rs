@@ -6,6 +6,8 @@ fn main() {
     Gen {
         instrument: Sine::f(440.0) * Exp(0.5).f() - 0.5.f(),
         note_duration: Duration::from_secs_f32(0.5),
+        min_freq_mul: 0.25,
+        max_freq_mul: 4.0,
         seed: 0,
     }
     .gen(Duration::from_secs(4))

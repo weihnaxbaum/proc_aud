@@ -10,6 +10,8 @@ pub struct Gen {
     pub instrument: Func,
     /// Must not be zero.
     pub note_duration: Duration,
+    pub min_freq_mul: f32,
+    pub max_freq_mul: f32,
     pub seed: u64,
 }
 
@@ -18,6 +20,8 @@ impl Default for Gen {
         Self {
             instrument: 0.0.f(),
             note_duration: Duration::from_secs_f32(0.5),
+            min_freq_mul: 0.5,
+            max_freq_mul: 2.0,
             seed: 0,
         }
     }
@@ -45,7 +49,7 @@ impl Gen {
         let mut out = Track::default();
         let mut rng = Rng::with_seed(self.seed);
         for i in 0..segments {
-            let freq_mul = rng.f32() * 1.5 + 0.5;
+            let freq_mul = self.min_freq_mul + (self.max_freq_mul - self.min_freq_mul) * rng.f32();
             let instrument = self.instrument.clone();
             let instrument = move |context| instrument.compute(context * freq_mul);
             out.notes.push(
